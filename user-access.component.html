@@ -1,0 +1,113 @@
+<div class="user-access-container">
+  <h2>User Access Configuration</h2>
+  
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Name Field -->
+    <div class="form-group">
+      <label for="name">Name *</label>
+      <input 
+        type="text" 
+        id="name" 
+        formControlName="name" 
+        class="form-control"
+        [class.is-invalid]="userForm.get('name')?.invalid && userForm.get('name')?.touched">
+      <div class="invalid-feedback" *ngIf="userForm.get('name')?.invalid && userForm.get('name')?.touched">
+        Name is required
+      </div>
+    </div>
+
+    <!-- Title Field -->
+    <div class="form-group">
+      <label for="title">Title *</label>
+      <input 
+        type="text" 
+        id="title" 
+        formControlName="title" 
+        class="form-control"
+        [class.is-invalid]="userForm.get('title')?.invalid && userForm.get('title')?.touched">
+      <div class="invalid-feedback" *ngIf="userForm.get('title')?.invalid && userForm.get('title')?.touched">
+        Title is required
+      </div>
+    </div>
+
+    <!-- IsSuperUser Checkbox -->
+    <div class="form-check">
+      <input 
+        type="checkbox" 
+        id="isSuperUser" 
+        formControlName="isSuperUser" 
+        class="form-check-input">
+      <label class="form-check-label" for="isSuperUser">
+        Is Super User
+      </label>
+    </div>
+
+    <!-- IsAccountManagementLead Checkbox -->
+    <div class="form-check">
+      <input 
+        type="checkbox" 
+        id="isAccountManagementLead" 
+        formControlName="isAccountManagementLead" 
+        class="form-check-input">
+      <label class="form-check-label" for="isAccountManagementLead">
+        Is Account Management Lead
+      </label>
+    </div>
+
+    <!-- Accounts Supported Section (Conditional) -->
+    <div *ngIf="userForm.get('isAccountManagementLead')?.value" class="accounts-section">
+      <label>Accounts Supported *</label>
+      
+      <!-- Existing Accounts -->
+      <div formArrayName="accountsSupported">
+        <div *ngFor="let account of accountsSupported.controls; let i = index" 
+             [formGroupName]="i" 
+             class="account-item">
+          <select formControlName="accountName" class="form-control">
+            <option value="">Select Account</option>
+            <option *ngFor="let acc of availableAccounts" [value]="acc">
+              {{ acc }}
+            </option>
+          </select>
+          <button type="button" class="btn btn-danger btn-sm" (click)="removeAccount(i)">
+            Remove
+          </button>
+        </div>
+      </div>
+
+      <!-- Add Account Button -->
+      <button type="button" class="btn btn-primary btn-sm" (click)="addAccount()">
+        + Add Account
+      </button>
+
+      <!-- Validation Message -->
+      <div *ngIf="accountsSupported.length === 0 && userForm.get('isAccountManagementLead')?.value" 
+           class="text-danger">
+        At least one account is required
+      </div>
+    </div>
+
+    <!-- Status Dropdown -->
+    <div class="form-group">
+      <label for="status">Status *</label>
+      <select id="status" formControlName="status" class="form-control">
+        <option *ngFor="let status of statusOptions" [value]="status">
+          {{ status }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-success" [disabled]="!isFormValid()">
+      Submit
+    </button>
+
+  </form>
+
+  <!-- Debug: Display Form Value (Optional) -->
+  <div class="mt-4" *ngIf="showDebug">
+    <h4>Form Value:</h4>
+    <pre>{{ userForm.value | json }}</pre>
+  </div>
+</div>
